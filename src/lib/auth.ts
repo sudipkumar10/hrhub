@@ -1,6 +1,13 @@
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
-import { organization, admin, twoFactor, magicLink } from "better-auth/plugins";
+import {
+  organization,
+  admin,
+  twoFactor,
+  magicLink,
+  username,
+  multiSession,
+} from "better-auth/plugins";
 import { passkey } from "@better-auth/passkey";
 
 import db from "./db";
@@ -11,6 +18,11 @@ export const auth = betterAuth({
   database: prismaAdapter(db, {
     provider: "postgresql",
   }),
+  user: {
+    deleteUser: {
+      enabled: true,
+    },
+  },
   emailAndPassword: {
     enabled: true,
     requireEmailVerification: true,
@@ -33,10 +45,21 @@ export const auth = betterAuth({
       });
     },
   },
+  socialProviders: {
+    google: {
+      clientId: process.env.GOOGLE_CLIENT_ID as string,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
+    },
+    github: {
+      clientId: process.env.GITHUB_CLIENT_ID as string,
+      clientSecret: process.env.GITHUB_CLIENT_SECRET as string,
+    },
+  },
   plugins: [
     organization(),
     admin(),
-    twoFactor(),
+    username(),
+    multiSession(),
     magicLink({
       sendMagicLink: async ({ email, url }) => {
         void sendEmail({
@@ -47,5 +70,17 @@ export const auth = betterAuth({
       },
     }),
     passkey(),
+    twoFactor({
+      issuer: "HR Hub",
+      otpOptions: {
+        sendOTP: async ({ user, otp }) => {
+          void sendEmail({
+            to: user.email,
+            subject: "Your 2FA Code",
+            text: `Your verification code is: ${otp}`,
+          });
+        },
+      },
+    }),
   ],
 });

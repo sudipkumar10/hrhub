@@ -30,8 +30,12 @@ model User {
   twofactors       TwoFactor[]
   passkeys         Passkey[]
 
+  username        String?
+  displayUsername String?
+
   @@unique([email])
   @@map("user")
+  @@unique([username])
 }
 
 model Session {

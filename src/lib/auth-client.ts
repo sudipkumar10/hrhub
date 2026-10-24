@@ -4,6 +4,8 @@ import {
   adminClient,
   twoFactorClient,
   magicLinkClient,
+  usernameClient,
+  multiSessionClient,
 } from "better-auth/client/plugins";
 import { passkeyClient } from "@better-auth/passkey/client";
 
@@ -15,5 +17,7 @@ export const authClient = createAuthClient({
     twoFactorClient(),
     magicLinkClient(),
     passkeyClient(),
+    usernameClient(),
+    multiSessionClient(),
   ],
 });
