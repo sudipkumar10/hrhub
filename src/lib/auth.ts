@@ -56,7 +56,16 @@ export const auth = betterAuth({
     },
   },
   plugins: [
-    organization(),
+    organization({
+      async sendInvitationEmail(data) {
+        const inviteLink = `http://localhost:3000/auth/accept-invitation?id=${data.id}`;
+        await sendEmail({
+          to: data.email,
+          subject: `You have been invited to join ${data.organization.name}`,
+          text: `Click the link to join: ${inviteLink}`,
+        });
+      },
+    }),
     admin(),
     username(),
     multiSession(),

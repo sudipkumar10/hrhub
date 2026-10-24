@@ -2,6 +2,7 @@ import Link from "next/link";
 
 import { UserButton } from "./auth/user/user-button";
 import { Logo } from "./logo";
+import { OrganizationSwitcher } from "./auth/organization/organization-switcher";
 
 export function Header() {
   return (
@@ -11,7 +12,10 @@ export function Header() {
           <Logo />
           <h1 className="text-base font-semibold">HR HUB</h1>
         </Link>
-        <UserButton size="icon" />
+        <div className="flex items-center gap-2">
+          <OrganizationSwitcher />
+          <UserButton size="icon" />
+        </div>
       </div>
     </header>
   );

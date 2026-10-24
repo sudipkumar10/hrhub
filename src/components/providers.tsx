@@ -19,8 +19,12 @@ import { AuthProvider } from "./auth/auth-provider";
 import { Toaster } from "./ui/sonner";
 import { twoFactorPlugin } from "@/lib/auth/two-factor-plugin";
 
-const normalizeParam = (param: string | string[] | undefined) =>
-  (Array.isArray(param) ? param[0] : param)?.replace(/^@/, "") ?? null;
+const normalizeParam = (param: string | string[] | undefined) => {
+  const raw = Array.isArray(param) ? param[0] : param;
+  if (!raw) return null;
+  const decoded = decodeURIComponent(raw);
+  return decoded.replace(/^@/, "");
+};
 
 function AuthProviderWithParams({ children }: { children: ReactNode }) {
   const router = useRouter();
