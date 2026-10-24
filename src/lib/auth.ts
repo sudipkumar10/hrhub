@@ -9,9 +9,16 @@ import {
   multiSession,
 } from "better-auth/plugins";
 import { passkey } from "@better-auth/passkey";
+import { razorpay } from "better-auth-razorpay";
+import Razorpay from "razorpay";
 
 import db from "./db";
 import { sendEmail } from "./email";
+
+const razorpayClient = new Razorpay({
+  key_id: process.env.RAZORPAY_KEY_ID!,
+  key_secret: process.env.RAZORPAY_KEY_SECRET!,
+});
 
 export const auth = betterAuth({
   appName: "HR Hub",
@@ -58,7 +65,7 @@ export const auth = betterAuth({
   plugins: [
     organization({
       async sendInvitationEmail(data) {
-        const inviteLink = `http://localhost:3000/auth/accept-invitation?id=${data.id}`;
+        const inviteLink = `http://localhost:3000/auth/accept-invitation?invitationId=${data.id}`;
         await sendEmail({
           to: data.email,
           subject: `You have been invited to join ${data.organization.name}`,
@@ -89,6 +96,30 @@ export const auth = betterAuth({
             text: `Your verification code is: ${otp}`,
           });
         },
+      },
+    }),
+
+    razorpay({
+      razorpayClient,
+      razorpayWebhookSecret: process.env.RAZORPAY_WEBHOOK_SECRET!,
+      createCustomerOnSignUp: true,
+      subscription: {
+        enabled: true,
+        plans: [
+          {
+            planId: process.env.RAZORPAY_PLAN_PRO!,
+            name: "pro",
+            totalCount: 12,
+          },
+          {
+            planId: process.env.RAZORPAY_PLAN_ENTERPRISE!,
+            name: "enterprise",
+            totalCount: 12,
+          },
+        ],
+      },
+      organization: {
+        enabled: true,
       },
     }),
   ],

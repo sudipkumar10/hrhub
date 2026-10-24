@@ -8,6 +8,7 @@ import {
   multiSessionClient,
 } from "better-auth/client/plugins";
 import { passkeyClient } from "@better-auth/passkey/client";
+import { razorpayClient } from "better-auth-razorpay/client";
 
 export const authClient = createAuthClient({
   baseURL: process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
@@ -19,5 +20,6 @@ export const authClient = createAuthClient({
     passkeyClient(),
     usernameClient(),
     multiSessionClient(),
+    razorpayClient({ subscription: true }),
   ],
 });

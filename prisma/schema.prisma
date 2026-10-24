@@ -33,6 +33,8 @@ model User {
   username        String?
   displayUsername String?
 
+  razorpayCustomerId String?
+
   @@unique([email])
   @@map("user")
   @@unique([username])
@@ -98,6 +100,8 @@ model Organization {
   metadata    String?
   members     Member[]
   invitations Invitation[]
+
+  razorpayCustomerId String?
 
   @@unique([slug])
   @@map("organization")
@@ -166,4 +170,32 @@ model Passkey {
   @@index([userId])
   @@index([credentialID])
   @@map("passkey")
+}
+
+model Subscription {
+  id                     String    @id
+  plan                   String
+  referenceId            String
+  razorpayCustomerId     String?
+  razorpaySubscriptionId String?
+  razorpayPlanId         String?
+  status                 String    @default("created")
+  currentStart           DateTime?
+  currentEnd             DateTime?
+  endedAt                DateTime?
+  quantity               Int?      @default(1)
+  totalCount             Int?
+  paidCount              Int?      @default(0)
+  remainingCount         Int?
+  cancelledAt            DateTime?
+  pausedAt               DateTime?
+  shortUrl               String?
+  cancelAtCycleEnd       Boolean?  @default(false)
+  billingPeriod          String?
+  trialStart             DateTime?
+  trialEnd               DateTime?
+  metadata               String?
+  renewedAt              DateTime?
+
+  @@map("subscription")
 }
